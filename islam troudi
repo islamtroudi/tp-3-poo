@@ -1,0 +1,140 @@
+package serie2;
+
+
+	import java.util.*;
+
+	public class PageReplacement {
+	    public static void main(String[] args) {
+	        Scanner sc = new Scanner(System.in);
+
+	        System.out.print("Enter Memory Size: ");
+	        int memSize = sc.nextInt();
+	        System.out.print("Enter Page Size: ");
+	        int pageSize = sc.nextInt();
+	        
+	        int numFrames = memSize / pageSize;
+	        System.out.println("Number of memory frames: " + numFrames);
+
+	        System.out.print("Enter the number of references: ");
+	        int n = sc.nextInt();
+	        int[] references = new int[n];
+	        System.out.println("Enter the reference chain:");
+	        for (int i = 0; i < n; i++) references[i] = sc.nextInt();
+
+	        while (true) {
+	            System.out.println("\n--- Page Replacement Menu ---");
+	            System.out.println("1. LRU");
+	            System.out.println("2. Optimal");
+	            System.out.println("3. Second Chance");
+	            System.out.println("4. Exit");
+	            System.out.print("Choice: ");
+	            int choice = sc.nextInt();
+
+	            if (choice == 4) break;
+
+	            switch (choice) {
+	                case 1: runLRU(references, numFrames); break;
+	                case 2: runOptimal(references, numFrames); break;
+	                case 3: runSecondChance(references, numFrames); break;
+	                default: System.out.println("Invalid choice!");
+	            }
+	        }
+	    }
+
+		private static void runSecondChance(int[] references, int numFrames) {
+			
+		}
+
+		private static void runOptimal(int[] references, int numFrames) {
+			
+		}
+
+		private static void runLRU(int[] references, int numFrames) {
+			
+		}
+} 
+/////////////////////////////////////
+package serie2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class runLRU {
+	public static void runLRU(int[] ref, int framesCount) {
+        List<Integer> frames = new ArrayList<>();
+        int pageFaults = 0;
+
+        System.out.println("\nLRU Execution States:");
+        for (int i = 0; i < ref.length; i++) {
+            int currentPage = ref[i];
+            if (!frames.contains(currentPage)) {
+                if (frames.size() < framesCount) {
+                    frames.add(currentPage);
+                } else {
+                    int farthest = i, victimIndex = 0;
+                    for (int j = 0; j < frames.size(); j++) {
+                        int lastUse = -1;
+                        for (int k = i - 1; k >= 0; k--) {
+                            if (frames.get(j) == ref[k]) {
+                                lastUse = k;
+                                break;
+                            }
+                        }
+                        if (lastUse < farthest) {
+                            farthest = lastUse;
+                            victimIndex = j;
+                        }
+                    }
+                    frames.set(victimIndex, currentPage);
+                }
+                pageFaults++;
+            }
+            System.out.println("Ref " + currentPage + ": " + frames);
+        }
+        System.out.println("Total Page Faults (LRU): " + pageFaults);
+    }
+}
+
+/////////////////////
+
+package serie2;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class runOptimal {
+	public static void runOptimal(int[] ref, int framesCount) {
+        List<Integer> frames = new ArrayList<>();
+        int pageFaults = 0;
+
+        for (int i = 0; i < ref.length; i++) {
+            int currentPage = ref[i];
+            if (!frames.contains(currentPage)) {
+                if (frames.size() < framesCount) {
+                    frames.add(currentPage);
+                } else {
+                    // البحث عن الصفحة الأبعد في المستقبل
+                    int farthest = -1, victimIndex = 0;
+                    for (int j = 0; j < frames.size(); j++) {
+                        int nextUse = Integer.MAX_VALUE;
+                        for (int k = i + 1; k < ref.length; k++) {
+                            if (frames.get(j) == ref[k]) {
+                                nextUse = k;
+                                break;
+                            }
+                        }
+                        if (nextUse > farthest) {
+                            farthest = nextUse;
+                            victimIndex = j;
+                        }
+                    }
+                    frames.set(victimIndex, currentPage);
+                }
+                pageFaults++;
+            }
+            System.out.println("Ref " + currentPage + ": " + frames);
+        }
+        System.out.println("Total Page Faults (Optimal): " + pageFaults);
+    }
+}
+
